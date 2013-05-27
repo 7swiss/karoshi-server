@@ -1,0 +1,3 @@
+#!/bin/bash
+cpu_cores=$(sed -n 's/^cpu cores[[:blank:]]*: //p' /proc/cpuinfo | head -n 1)
+blender --background [FILEPATH] --render-output //rendered/render_######## --render-format PNG --use-extension 1 --scene 0 -P <(echo 'import bpy; bpy.data.scenes[0].render.use_placeholder = True; bpy.data.scenes[0].render.use_overwrite = False;') --threads $cpu_cores --render-anim

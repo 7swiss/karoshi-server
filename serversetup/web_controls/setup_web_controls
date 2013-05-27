@@ -225,6 +225,10 @@ cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/staff/lockout_reset_fm.cgi /
 cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/staff/printers.cgi /var/www/cgi-bin_karoshi/staff/
 cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/staff/printers_control.cgi /var/www/cgi-bin_karoshi/staff/
 
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/distributed_computing_new_project_fm.cgi /var/www/cgi-bin_karoshi/staff/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/distributed_computing_new_project.cgi /var/www/cgi-bin_karoshi/staff/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/distributed_computing_manage.cgi /var/www/cgi-bin_karoshi/staff/
+
 cp -f -R /opt/karoshi/serversetup/web_controls/cgi/pdc/all/* /var/www/cgi-bin_karoshi/all/
 
 
@@ -929,6 +933,8 @@ WEBCTRL=yes
 fi
 fi
 
+DISTRIBUTEDSTAFFCTRL=no
+
 echo ADDUSERCTRL=$ADDUSERCTRL > /opt/karoshi/server_network/menusettings
 echo BACKUPCTRL=$BACKUPCTRL >> /opt/karoshi/server_network/menusettings
 echo DHCPCTRL=$DHCPCTRL >> /opt/karoshi/server_network/menusettings
@@ -944,6 +950,7 @@ echo PRINTERCTRL=$PRINTERCTRL >> /opt/karoshi/server_network/menusettings
 echo RADIUSCTRL=$RADIUSCTRL >> /opt/karoshi/server_network/menusettings
 echo REVERSEPROXYCTRL=$REVERSEPROXYCTRL >> /opt/karoshi/server_network/menusettings
 echo WEBCTRL=$WEBCTRL >> /opt/karoshi/server_network/menusettings
+echo DISTRIBUTEDSTAFFCTRL=$DISTRIBUTEDSTAFFCTRL >> /opt/karoshi/server_network/menusettings
 
 ###########################
 #Check for updates

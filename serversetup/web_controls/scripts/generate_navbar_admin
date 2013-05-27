@@ -512,5 +512,15 @@ fi
 echo '		</ul>
 	</li>'
 fi
+#Distributed computing
+echo '	<li class="top"><a href="/cgi-bin/admin/distributed_computing_manage.cgi" id="distributed-computing" class="top_link"><span class="down">'$DISTRIBUTEDCOMPUTING'</span></a>
+		<ul class="sub">
+			<li><a href="/cgi-bin/admin/distributed_computing_new_project_fm.cgi">'$DISTRIBUTEDNEWPROJECT'</a></li>
+			<li><a href="/cgi-bin/admin/distributed_computing_manage.cgi">'$DISTRIBUTEDMANAGE'</a></li>
+			<li><a href="/cgi-bin/admin/distributed_computing_new_type_fm.cgi">'$DISTRIBUTEDNEWTYPE'</a></li>
+			<li><a href="/cgi-bin/admin/distributed_computing_manage_types.cgi">'$DISTRIBUTEDMANAGETYPES'</a></li>
+			<li><a href="/cgi-bin/admin/distributed_computing_access_fm.cgi">'$DISTRIBUTEDACCESS'</a></li>
+		</ul>
+	</li>'
 echo '</ul></div>'
 exit

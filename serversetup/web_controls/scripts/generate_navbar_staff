@@ -69,4 +69,13 @@ echo '	<li class="top"><a href="/cgi-bin/staff/dg_view_student_user_logs_fm.cgi"
 		</ul>
 	</li>'
 fi
+#Distributed computing
+if [ $DISTRIBUTEDSTAFFCTRL = yes ]; then
+	echo '	<li class="top"><a href="/cgi-bin/staff/distributed_computing_manage.cgi" id="distributed" class="top_link"><span class="down">'$DISTRIBUTEDCOMPUTING'</span></a>
+		<ul class="sub">
+			<li><a href="/cgi-bin/staff/distributed_computing_new_project_fm.cgi">'$DISTRIBUTEDNEWPROJECT'</a></li>
+			<li><a href="/cgi-bin/staff/distributed_computing_manage.cgi">'$DISTRIBUTEDMANAGE'</a></li>
+		</ul>
+	</li>'
+fi
 echo '</ul></div>'

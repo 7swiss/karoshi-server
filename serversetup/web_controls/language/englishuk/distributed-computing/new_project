@@ -1,0 +1,3 @@
+#Language file for: new_project
+ERRORMSG1="You must enter a project name and type"
+ERRORMSG2="You must specify a valid project type"

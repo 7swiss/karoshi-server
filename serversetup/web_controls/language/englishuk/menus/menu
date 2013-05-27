@@ -360,6 +360,15 @@ SETDOMAIN="Set Domain Names"
 RPROXYADD="Add Reverse Proxy"
 RPROXYVIEW="View Reverse Proxies"
 ##################################
+#Distributed Computing
+##################################
+DISTRIBUTEDCOMPUTING="Distributed Computing"
+DISTRIBUTEDNEWPROJECT="New Project"
+DISTRIBUTEDMANAGE="Manage Projects"
+DISTRIBUTEDNEWTYPE="Create New Project Type"
+DISTRIBUTEDMANAGETYPES="Manage Project Types"
+DISTRIBUTEDACCESS="Access Control"
+##################################
 #Info
 ##################################
 INFO="Web Management Info"

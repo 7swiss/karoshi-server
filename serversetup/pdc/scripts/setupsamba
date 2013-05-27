@@ -321,6 +321,12 @@ echo -e '# Global parameters
 	invalid users = root,administrator
 	read only = No
 	browseable = Yes
+
+[distributed-computing]
+	path = /home/distributed-computing
+	invalid users = root,administrator
+	read only = No
+	guest ok = Yes
 ' > /etc/samba/smb.conf
 
 #Turn off complex password settings
@@ -795,6 +801,20 @@ echo $CREATEFOLDERMSG itadminshare
 chown root.itadmin -R /home/itadminshare
 chmod 0660 -R /home/itadminshare
 chmod u+X,g+X -R /home/itadminshare
+
+#Distrbuted-computing area
+echo $CREATEFOLDERMSG distributed-computing
+[ -d /home/distributed-computing ] || mkdir /home/distributed-computing
+[ -d /home/distributed-computing/output ] || mkdir /home/distributed-computing/output
+[ -d /home/distributed-computing/running ] || mkdir /home/distributed-computing/running
+[ -d /home/distributed-computing/project-types ] || mkdir /home/distributed-computing/project-types
+
+cp -n /opt/karoshi/serversetup/pdc/distributed-computing/sample-types/* /home/distributed-computing/project-types
+
+chown -R root.root /home/distributed-computing
+chmod -R 0755 /home/distributed-computing
+chmod 0711 /home/distributed-computing/running
+
 #Karoshi log area
 [ -d /var/log/karoshilogs ] || mkdir /var/log/karoshilogs
 chmod 0373 /var/log/karoshilogs
