@@ -322,8 +322,8 @@ echo -e '# Global parameters
 	read only = No
 	browseable = Yes
 
-[distributed-computing]
-	path = /home/distributed-computing
+[distributed_computing]
+	path = /home/distributed_computing
 	invalid users = root,administrator
 	read only = No
 	guest ok = Yes
@@ -803,17 +803,17 @@ chmod 0660 -R /home/itadminshare
 chmod u+X,g+X -R /home/itadminshare
 
 #Distrbuted-computing area
-echo $CREATEFOLDERMSG distributed-computing
-[ -d /home/distributed-computing ] || mkdir /home/distributed-computing
-[ -d /home/distributed-computing/output ] || mkdir /home/distributed-computing/output
-[ -d /home/distributed-computing/running ] || mkdir /home/distributed-computing/running
-[ -d /home/distributed-computing/project-types ] || mkdir /home/distributed-computing/project-types
+echo $CREATEFOLDERMSG distributed_computing
+[ -d /home/distributed_computing ] || mkdir /home/distributed_computing
+[ -d /home/distributed_computing/running ] || mkdir /home/distributed_computing/running
+[ -d /home/distributed_computing/finished ] || mkdir /home/distributed_computing/finished
+[ -d /home/distributed_computing/project_types ] || mkdir /home/distributed_computing/project_types
 
-cp -n /opt/karoshi/serversetup/pdc/distributed-computing/sample-types/* /home/distributed-computing/project-types
+chown -R root.root /home/distributed_computing
+chmod -R 0755 /home/distributed_computing
+chmod 0711 /home/distributed_computing/running
 
-chown -R root.root /home/distributed-computing
-chmod -R 0755 /home/distributed-computing
-chmod 0711 /home/distributed-computing/running
+cp -n /opt/karoshi/serversetup/pdc/distributed_computing/sample_types/* /home/distributed_computing/project_types
 
 #Karoshi log area
 [ -d /var/log/karoshilogs ] || mkdir /var/log/karoshilogs
