@@ -27,6 +27,7 @@ use CGI;
 $CGI::POST_MAX=1024 * 1024 * 1024 * 2; # 2GiB uploads
 use ParseBash;
 use Digest::MD5;
+use File::Spec;
 
 my $query = CGI->new;
 my $bashVars = ParseBash->new;
@@ -78,7 +79,7 @@ sub show_status {
 	$message = $message ? $message : $bashVars->var('PROBLEMMSG');
 	print $query->script({-type=>'text/javascript'},
 		"\n",
-		"alert(\"" . quotemeta($message) =~ s/\\\\n/\\n/gr . "\");\n",
+		"alert('" . quotemeta($message) =~ s/\\\\n/\\n/gr . "');\n",
 		"window.location = '/cgi-bin/admin/" . $startPage . "';\n"),
 		$query->end_html;
 	exit;
@@ -107,10 +108,12 @@ show_status $bashVars->var('ACCESS_ERROR1') unless $userPermitted;
 #########################
 #Check data
 #########################
-my $projectType = $query->param('projectType');
-$projectType =~ tr/\/://d;
 my $projectName = $query->param('projectName');
-$projectName =~ tr/\/://d;
+$projectName =~ tr/[ -~]//cd;
+my $projectType = $query->param('projectType');
+$projectType =~ tr/[ -~]//cd;
+my $targetFilename = File::Spec->splitpath($query->param('dataFile'))[2];
+$targetFilename =~ tr/[ -~]//cd;
 my $dataFilename = $query->param('dataFile') ? $query->tmpFileName($query->param('dataFile')) : undef;
 
 show_status $bashVars->var('ERRORMSG1') unless $projectType and $projectName;
@@ -120,7 +123,7 @@ show_status $bashVars->var('ERRORMSG2') unless ( -e '/home/distributed_computing
 
 #Check for name conflicts
 my $nameConflict = 0;
-$nameConflict = 1 if ( -e "/home/distributed_computing/running/" . $projectName or -e "/home/distributed_computing/finished/" . $projectName );
+$nameConflict = 1 if ( -e "/home/distributed_computing/projects/" . $projectName );
 
 #########################
 #Generate content
@@ -161,10 +164,11 @@ if (not $nameConflict) {
 	$md5->addfile($selfFileHandle);
 	
 	my $pid = open my $execInput, "| sudo -H /opt/karoshi/web_controls/exec/distributed_computing_new_project" or show_status;
-	print $execInput $query->remote_user, ":", $query->remote_addr, ":", $projectType, ":", $projectName, ":", $dataFilename, "\n";
+	print $execInput $query->remote_user, "\0", $query->remote_addr, "\0", $projectName, "\0", $projectType, "\0", $dataFilename, "\0", $targetFilename, "\0";
 	close $execInput;
 	waitpid($pid, 0);
 	my $errorCode = $? >> 8;
+	show_status $bashVars->var('PROBLEMMSG') . " " . $bashVars->var('LOGMSG') if ($errorCode == 101);
 	show_status $bashVars->var('CREATEDSUCCESSFULLY') . '\n\n' . $bashVars->var('PROJECTNAME') . " - " . $projectName . '\n' . $bashVars->var('PROJECTTYPE') . " - " . $projectType . '\n';
 }
 	

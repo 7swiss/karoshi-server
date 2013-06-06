@@ -802,16 +802,16 @@ chown root.itadmin -R /home/itadminshare
 chmod 0660 -R /home/itadminshare
 chmod u+X,g+X -R /home/itadminshare
 
-#Distrbuted-computing area
+#Distrbuted_computing area
 echo $CREATEFOLDERMSG distributed_computing
 [ -d /home/distributed_computing ] || mkdir /home/distributed_computing
-[ -d /home/distributed_computing/running ] || mkdir /home/distributed_computing/running
+[ -d /home/distributed_computing/projects ] || mkdir /home/distributed_computing/projects
 [ -d /home/distributed_computing/finished ] || mkdir /home/distributed_computing/finished
 [ -d /home/distributed_computing/project_types ] || mkdir /home/distributed_computing/project_types
 
 chown -R root.root /home/distributed_computing
 chmod -R 0755 /home/distributed_computing
-chmod 0711 /home/distributed_computing/running
+chmod 0711 /home/distributed_computing/projects
 
 cp -n /opt/karoshi/serversetup/pdc/distributed_computing/sample_types/* /home/distributed_computing/project_types
 

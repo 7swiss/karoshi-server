@@ -1,0 +1,158 @@
+#!/bin/bash
+#Copyright (C) 2013 Robin McCorkell
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#aball@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+
+log_date=`date +%F`
+########################
+#Check md5checksum
+########################
+if [ ! -f /opt/karoshi/web_controls/checksums/admin_checksums/distributed_computing_new_project_cgi ]; then
+	echo `date`: distributed_computing_new_project - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$log_date
+	exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/distributed_computing_new_project_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/distributed_computing_new_project.cgi | cut -d' ' -f1`
+[ "$MD5SUM" ] || MD5SUM=not_set
+if [ "$MD5SUM" != "$distributed_computing_new_project_cgi" ]; then
+	echo `date`: distributed_computing_new_project - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$log_date
+	exit 101
+fi
+
+if [ ! -f /opt/karoshi/web_controls/checksums/staff_checksums/distributed_computing_new_project_cgi ]; then
+	echo `date`: distributed_computing_new_project - No staff MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$log_date
+	exit 101
+fi
+source /opt/karoshi/web_controls/checksums/staff_checksums/distributed_computing_new_project_cgi
+MD5SUM2=`md5sum /var/www/cgi-bin_karoshi/staff/distributed_computing_new_project.cgi | cut -d' ' -f1`
+[ "$MD5SUM2" ] || MD5SUM2=not_set
+if [ "$MD5SUM2" != "$distributed_computing_new_project_cgi" ]; then
+	echo `date`: distributed_computing_new_project - Incorrect staff MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$log_date
+	exit 101
+fi
+
+########################
+#Get variables
+########################
+if [ $# != 0 ]; then
+	echo `date`: distributed_computing_new_project - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$log_date
+	exit 101
+fi
+
+#Delimit with null character, so that every other ASCII character can be used
+read -r -d $'\0' remote_user
+read -r -d $'\0' remote_addr
+read -r -d $'\0' remote_md5
+read -r -d $'\0' projectName
+read -r -d $'\0' projectType
+read -r -d $'\0' dataFilename
+read -r -d $'\0' targetFilename
+
+########################
+#Check data
+########################
+if [ "$remote_md5" != "$MD5SUM" ] && [ "$remote_md5" != "$MD5SUM2" ]
+then
+	echo `date`: distributed_computing_new_project - Not called by distributed_computing_new_project.cgi >> /opt/karoshi/logs/karoshi_web_management/$log_date
+	exit 101
+fi
+if [ -z "$remote_user" ]
+then
+	echo `date`: distributed_computing_new_project - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$log_date
+	exit 101
+fi
+if [ -z "$remote_addr" ]
+then
+	echo `date`: distributed_computing_new_project - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$log_date
+	exit 101
+fi
+if [ -z "$projectName" ]
+then
+	echo `date`: distributed_computing_new_project - Blank project name by "$remote_user" from "$remote_addr" >> /opt/karoshi/logs/karoshi_web_management/$log_date
+	exit 101
+fi
+if [ -z "$projectType" ]
+then
+	echo `date`: distributed_computing_new_project - Blank project type by "$remote_user" from "$remote_addr" >> /opt/karoshi/logs/karoshi_web_management/$log_date
+	exit 101
+fi
+
+if [ ! -f /home/distributed_computing/project_types/"$projectType" ]; then
+	echo `date`: distributed_computing_new_project - Invalid project type by "$remote_user" from "$remote_addr" >> /opt/karoshi/logs/karoshi_web_management/$log_date
+	exit 101
+fi
+if [ -e /home/distributed_computing/projects/"$projectName" ]; then
+	echo `date`: distributed_computing_new_project - Project with the same name already exists by "$remote_user" from "$remote_addr" >> /opt/karoshi/logs/karoshi_web_management/$log_date
+	exit 101
+fi
+
+if [ `grep -c ^$remote_user: /opt/karoshi/web_controls/web_access_admin` != 1 ] && [ `grep -c ^$remote_user: /opt/karoshi/web_controls/web_access_tech` != 1 ]
+then
+	echo `date`: distributed_computing_new_project - access denied to "$remote_user" from "$remote_addr" >> /opt/karoshi/logs/karoshi_web_management/$log_date
+	exit 101
+fi
+
+##########################
+#Language
+##########################
+LANGCHOICE=englishuk
+STYLESHEET=defaultstyle.css
+[ -f /opt/karoshi/web_controls/user_prefs/"$remote_user" ] && source /opt/karoshi/web_controls/user_prefs/"$remote_user"
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/user/add_user ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/user/add_user
+[ -f /opt/karoshi/web_controls/language/$LANGCHOICE/all ] || LANGCHOICE=englishuk
+source /opt/karoshi/web_controls/language/$LANGCHOICE/all
+
+##########################
+#Create project
+##########################
+mkdir -m 0700 /home/distributed_computing/projects/"$projectName"
+mkdir /home/distributed_computing/projects/"$projectName"/data
+mkdir /home/distributed_computing/projects/"$projectName"/output
+
+echo "$projectType" > /home/distributed_computing/projects/"$projectName"/type
+ln -s ../../project_types/"$projectType" /home/distributed_computing/projects/"$projectName"/exec
+touch /home/distributed_computing/projects/"$projectName"/status
+
+#Handle data files
+if [[ $dataFilename ]]; then
+	#Run extraction as nobody to prevent access to other parts of the system
+	chown nobody:root /home/distributed_computing/projects/"$projectName"/data
+	chmod 0755 "$dataFilename"
+	if [[ $targetFilename == *@(.tar.gz|.tgz|.tar.bz2|.tbz|.tbz2|.tb2|.tar.xz|.txz|.tar.lz|.tlz|.tar.Z|.taz|.tar) ]]; then
+		sudo -n -u nobody tar -x --no-overwrite-dir --no-same-owner --no-same-permissions -C /home/distributed_computing/projects/"$projectName"/data -f "$dataFilename"
+	elif [[ $targetFilename == *.zip ]]; then
+		sudo -n -u nobody unzip -d /home/distributed_computing/projects/"$projectName"/data "$dataFilename"
+	else
+		#Copy in with same filename as the file uploaded
+		sudo -n -u nobody cp "$dataFilename" /home/distributed_computing/projects/"$projectName"/data/"$targetFilename"
+	fi
+	chown -R root:root /home/distributed_computing/projects/"$projectName"/data
+fi
+
+#Permissions
+chown -R root:root /home/distributed_computing/projects/"$projectName"
+chmod -R 0755 /home/distributed_computing/projects/"$projectName"
+chmod 0777 /home/distributed_computing/projects/"$projectName"/output
+
+##########################
+#Send job to scheduler
+##########################
